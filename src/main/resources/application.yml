@@ -1,0 +1,64 @@
+logging:
+  level:
+    jdbc:
+      connection: info
+      resultsettable: info
+      sqlonly: info
+      sqltiming: info
+    org:
+      hibernate: info
+      springframework:
+        security: debug
+    root: info
+server:
+  servlet:
+    context-path: /jwtstudy
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: "!Q2w3e4r"
+    url: jdbc:mysql://52.79.237.168:3306/jwtTest
+    username: java
+  devtools:
+    livereload:
+      enabled: true
+    remote:
+      restart:
+        enabled: true
+
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        use_sql_comments: true
+
+  security:
+    user:
+      name: users
+      password: 1234
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates
+
+  servlet:
+    multipart:
+      location: thumbs/
+      max-file-size: 10MB
+
+upload:
+  path:
+    files: files/
+    thumbs: thumbs/
+    banners: banners/
+jwt:
+  issuer: zqbcsola6KfetxAjTCLrb4TKIqDSy7pQhHS6T8vUT7wxLkYtkcLW2uRoKKctQsDa
+  secret: 2JFswcRFT5EV4xN3NNp7H8bwXPyRgLKjzzn0OKmzKhu7n5xUbgMpaTD83FZParbJ
+# mybatis 설정
+mybatis:
+  mapper-locations: classpath:mappers/**/*.xml
