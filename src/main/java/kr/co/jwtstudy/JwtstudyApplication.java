@@ -13,16 +13,15 @@ public class JwtstudyApplication {
         SpringApplication.run(JwtstudyApplication.class, args);
     }
 
-   /* @Bean
+    @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000","http://localhost:3001", "http://localhost:8080", "http://localhost:63342", "http://15.164.210.84:3000", "http://15.164.210.84:8080")
+                        .allowedOrigins("http://localhost:3000", "http://localhost:8080")
                         .allowedMethods("OPTIONS", "GET", "POST", "PUT", "DELETE");
             }
         };
     }
-*/
 }

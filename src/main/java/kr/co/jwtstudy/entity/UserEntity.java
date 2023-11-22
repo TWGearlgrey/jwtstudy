@@ -19,6 +19,9 @@ public class UserEntity {
     private String uid;
     private String pass;
     private String role;
+    private String name;
+    private String hp;
+    private int    age;
 
     public UserDTO toDTO() {
         return UserDTO

@@ -27,23 +27,28 @@ public class JwtProvider {
     private SecretKey secretKey;
 
     // issuer, secret key 값 load
-    public JwtProvider(@Value("${jwt.issuer}") String isseuer,
+    public JwtProvider(@Value("${jwt.issuer}") String issuer,
                        @Value("${jwt.secret}") String secret) {
-        this.issuer    = isseuer;
+        this.issuer    = issuer;
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
     // token 생성
-    public String createToken(UserEntity user, int hour) {
+    public String createToken(UserEntity user, int min) {
+        log.info("START!!!...jwt.JwtProvider.createToken()");
+
         // 생성일, 만료일(1시간) 생성
         Date issuredDate = new Date();
         Date expiredDate = new Date(issuredDate.getTime()
-            + Duration.ofDays(hour).toMillis()/24);
+            + Duration.ofDays(min).toMillis()/1440);
+        log.info(" - createToken() 1.1. issuredDate : " + issuredDate);
+        log.info(" - createToken() 1.2. expiredDate : " + expiredDate);
 
         // jwt 클레임 생성
         Claims claims = Jwts.claims();
         claims.put("uid",  user.getUid());
         claims.put("role", user.getRole());
+        log.info(" - createToken() 2.1. claims : " + claims);
 
         // JSON Web Token 생성
         String token = Jwts.builder()
@@ -61,17 +66,22 @@ public class JwtProvider {
             .signWith(secretKey, SignatureAlgorithm.HS256)
             // parse to String
             .compact();
-
+        log.info(" - createToken() 3.1. token : " + token);
+        log.info("EEEND!!!...jwt.JwtProvider.createToken()");
         return token;
     }
 
     // authentication 객체 생성
     public Authentication getAuthentication(String token) {
+        log.info("START!!!...jwt.JwtProvider.getAuthentication()...");
         // getClaims method로 token secretKey 검증 후 payload 추출.
         Claims claims = getClaims(token);
+        log.info(" - getAuthentication() 1.1. claims : " + claims);
         // payload에서 uid, role 추출
         String uid  = (String) claims.get("uid");
         String role = (String) claims.get("role");
+        log.info(" - getAuthentication() 1.2. uid  : " + uid);
+        log.info(" - getAuthentication() 1.3. role : " + role);
 
         /* CASE1. 유저가 여러개의 권한을 가질 때.
         // GrantedAuthority는 Spring security에서 권한을 확인하기 위한 인터페이스.
@@ -85,10 +95,13 @@ public class JwtProvider {
 
         /* CASE2. 유저가 하나의 권한을 가질 때  */
         GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+        log.info(" - getAuthentication() 2.1. authority :" + authority);
 
         // user 객체 생성 (uid, password, role 순서)
         User principal = new User(uid, "", Collections.singletonList(authority));
+        log.info(" - getAuthentication() 2.2. principal : " + principal);
 
+        log.info("EEEND!!!...jwt.JwtProvider.getAuthentication()...");
         // Spring security의 사용자 인증정보를 나타내는 UsernamePasswordAuthenticationToken Class
         // 사용자 정보를 담는 principal, 사용자의 비밀번호를 나타내는 credentials, 권한 정보를 나타내는 authority
         return new UsernamePasswordAuthenticationToken(principal, token, Collections.singletonList(authority));
@@ -96,11 +109,14 @@ public class JwtProvider {
 
     // 토큰 검사 메서드
     public boolean validateToken(String token) {
+        log.info("START!!!...jwt.JwtProvider.validateToken()...");
         try {
+            log.info(" - validateToken() 1.1. token : " + token);
             Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
+            log.info("EEEND!!!...jwt.JwtProvider.validateToken()...token is true");
             return true;
 
         } catch (SecurityException | MalformedJwtException e) {
@@ -115,11 +131,15 @@ public class JwtProvider {
         } catch (IllegalArgumentException e) {
             log.info("JWT 토큰이 잘 못 되었습니다. : " + e.getMessage());
         }
+        log.info("EEEND!!!...jwt.JwtProvider.validateToken()...token is false");
         return false;
     }
 
     // JSON Web Token에서 claims 추출.
     public Claims getClaims(String token) {
+        log.info("START!!!...jwt.JwtProvider.getClaims()...");
+        log.info(" - getClaims() 1.1. token : " + token);
+        log.info("EEEND!!!...jwt.JwtProvider.getClaims()...");
         return Jwts.parserBuilder()
                 // 서명 확인을 위해 secretKey set(jwt.secret)
                 .setSigningKey(secretKey)

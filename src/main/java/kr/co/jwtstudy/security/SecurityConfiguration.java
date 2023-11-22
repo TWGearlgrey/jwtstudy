@@ -1,6 +1,8 @@
 package kr.co.jwtstudy.security;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,7 +14,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-public class SecurityConfig {
+@Log4j2
+@Configuration
+public class SecurityConfiguration {
 
     /*private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -20,9 +24,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+        log.info("START!!!...SecurityConfig.filterChain()...");
 
         httpSecurity
-            //위변조 방지 비활성(개발할때만 끔)
+            //위변조 방지 비활성(개발할때만 끔) - csrf 토큰 비활성화
             .csrf(CsrfConfigurer::disable)
             //기본 HTTP 인증방식 비활성
             .httpBasic(HttpBasicConfigurer::disable)
@@ -50,6 +55,7 @@ public class SecurityConfig {
                 /*.requestMatchers("/product/cart").authenticated()//인가설정*/
                 /*.requestMatchers("/product/cart").hasAnyRole("USER")//인가설정*/
                 .requestMatchers("/").permitAll()//인가설정
+                .requestMatchers("/user").permitAll()//인가설정
                 .requestMatchers("/**").permitAll())
             //tokenProvider 적용
             /*.apply(new JwtSecurityConfig(tokenProvider))*/;
@@ -91,17 +97,22 @@ public class SecurityConfig {
         httpSecurity.userDetailsService(userService);
 */
 
-
+        log.info("EEEND!!!...SecurityConfig.filterChain()...");
         return httpSecurity.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+        log.info("START!!!...SecurityConfig.passwordEncoder()...");
+        log.info("EEEND!!!...SecurityConfig.passwordEncoder()...");
+        // 비밀번호 인코딩 처리(암호화)
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        log.info("START!!!...SecurityConfig.authenticationManager()...");
+        log.info("EEEND!!!...SecurityConfig.authenticationManager()...");
         return config.getAuthenticationManager();
     }
 
